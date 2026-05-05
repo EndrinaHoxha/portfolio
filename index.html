@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Endrina Hoxha — Java Backend Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1614;
+    --paper: #f5f0eb;
+    --warm: #c8a882;
+    --rust: #8b4a2f;
+    --sage: #5a6b5a;
+    --muted: #9a8f86;
+    --light: #e8e0d6;
+    --dark-bg: #141210;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Cormorant Garamond', Georgia, serif; background: var(--paper); color: var(--ink); overflow-x: hidden; }
+
+  .cursor { width: 8px; height: 8px; background: var(--rust); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); }
+  .cursor-ring { width: 30px; height: 30px; border: 1px solid var(--warm); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: transform 0.35s cubic-bezier(.19,1,.22,1); opacity: 0.5; }
+
+  nav { position: fixed; top: 0; left: 0; right: 0; padding: 1.6rem 4rem; display: flex; align-items: center; justify-content: space-between; z-index: 200; background: linear-gradient(to bottom, rgba(245,240,235,0.96), transparent); }
+  .nav-logo { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.13em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.25s; }
+  .nav-links a:hover { color: var(--rust); }
+
+  /* HERO */
+  .hero { min-height: 100vh; display: grid; grid-template-columns: 55% 45%; position: relative; }
+  .hero-left { display: flex; flex-direction: column; justify-content: flex-end; padding: 9rem 3.5rem 6rem 4.5rem; }
+  .hero-eyebrow { font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--sage); margin-bottom: 1.8rem; opacity: 0; animation: fadeUp 0.9s ease 0.1s forwards; }
+  h1 { font-size: clamp(3.8rem, 5.5vw, 6.5rem); font-weight: 300; line-height: 0.93; letter-spacing: -0.025em; opacity: 0; animation: fadeUp 0.9s ease 0.2s forwards; }
+  h1 em { font-style: italic; color: var(--rust); }
+  h1 span { display: block; }
+  .hero-role { margin-top: 2.2rem; font-size: 1.05rem; font-weight: 300; color: var(--muted); line-height: 1.7; max-width: 400px; opacity: 0; animation: fadeUp 0.9s ease 0.3s forwards; }
+  .hero-actions { margin-top: 3rem; display: flex; gap: 1.8rem; align-items: center; opacity: 0; animation: fadeUp 0.9s ease 0.4s forwards; }
+  .btn { padding: 0.85rem 2rem; background: var(--ink); color: var(--paper); font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.13em; text-transform: uppercase; text-decoration: none; transition: background 0.25s, transform 0.2s; display: inline-block; }
+  .btn:hover { background: var(--rust); transform: translateY(-2px); }
+  .btn-outline { background: transparent; border: 1px solid var(--light); color: var(--muted); }
+  .btn-outline:hover { background: transparent; border-color: var(--rust); color: var(--rust); }
+
+  .hero-right { position: relative; overflow: hidden; }
+  .hero-panel { position: absolute; inset: 0; background: linear-gradient(155deg, #c8956a 0%, #8b4a2f 55%, #5a2d1a 100%); clip-path: polygon(10% 0%, 100% 0%, 100% 100%, 0% 100%); }
+  .hero-panel::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 70% 30%, rgba(255,255,255,0.08) 0%, transparent 60%); }
+  .hero-badge { position: absolute; top: 50%; left: 50%; transform: translate(-30%, -50%); text-align: center; color: rgba(255,255,255,0.9); }
+  .hero-badge-num { font-size: 8rem; font-weight: 300; line-height: 1; letter-spacing: -0.05em; }
+  .hero-badge-sub { font-family: 'DM Mono', monospace; font-size: 0.52rem; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.65; margin-top: 0.3rem; }
+  .hero-contact-strip { position: absolute; bottom: 3rem; left: 20%; display: flex; flex-direction: column; gap: 0.7rem; }
+  .contact-item { font-family: 'DM Mono', monospace; font-size: 0.56rem; letter-spacing: 0.1em; color: rgba(255,255,255,0.6); display: flex; align-items: center; gap: 0.7rem; text-decoration: none; transition: color 0.2s; }
+  .contact-item:hover { color: rgba(255,255,255,0.95); }
+  .contact-item svg { width: 10px; height: 10px; fill: currentColor; flex-shrink: 0; }
+  .scroll-cue { position: absolute; bottom: 2.5rem; left: 4.5rem; font-family: 'DM Mono', monospace; font-size: 0.56rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 1rem; opacity: 0; animation: fadeUp 0.9s ease 0.7s forwards; }
+  .scroll-cue::before { content: ''; display: block; width: 36px; height: 1px; background: var(--muted); }
+
+  /* SECTIONS */
+  section { padding: 8rem 4.5rem; }
+  .sec-head { display: flex; align-items: baseline; gap: 1.2rem; margin-bottom: 5rem; border-bottom: 1px solid var(--light); padding-bottom: 1.5rem; }
+  .sec-num { font-family: 'DM Mono', monospace; font-size: 0.58rem; color: var(--warm); letter-spacing: 0.12em; }
+  h2 { font-size: clamp(2rem, 3vw, 3rem); font-weight: 300; letter-spacing: -0.025em; }
+  h2 em { font-style: italic; color: var(--rust); }
+
+  /* ABOUT */
+  .about-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 6rem; align-items: start; }
+  .about-text p { font-size: 1.15rem; line-height: 1.85; font-weight: 300; color: #3a3028; margin-bottom: 1.6rem; }
+  .about-text p strong { font-weight: 600; color: var(--rust); }
+  .about-facts { margin-top: 2.5rem; display: flex; flex-direction: column; gap: 0.7rem; }
+  .fact { display: flex; align-items: center; gap: 1rem; font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.06em; color: var(--muted); }
+  .fact::before { content: ''; display: inline-block; width: 18px; height: 1px; background: var(--warm); flex-shrink: 0; }
+  .stats-board { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--light); border: 1px solid var(--light); }
+  .stat-cell { background: var(--paper); padding: 2.2rem 2rem; }
+  .stat-n { font-size: 3.2rem; font-weight: 300; letter-spacing: -0.04em; line-height: 1; color: var(--rust); }
+  .stat-l { font-family: 'DM Mono', monospace; font-size: 0.56rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-top: 0.6rem; }
+
+  /* SKILLS */
+  #skills { background: var(--dark-bg); }
+  #skills .sec-head { border-color: rgba(200,168,130,0.15); }
+  #skills h2 { color: var(--paper); }
+  .skills-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5px; background: rgba(200,168,130,0.08); border: 1px solid rgba(200,168,130,0.08); }
+  .skill-card { background: var(--dark-bg); padding: 2.5rem 2.2rem; transition: background 0.3s; position: relative; overflow: hidden; }
+  .skill-card::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px; background: var(--warm); transition: width 0.4s ease; }
+  .skill-card:hover { background: #1c1916; }
+  .skill-card:hover::after { width: 100%; }
+  .sk-icon { font-size: 1.3rem; margin-bottom: 1rem; }
+  .sk-cat { font-family: 'DM Mono', monospace; font-size: 0.56rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--warm); margin-bottom: 1.4rem; }
+  .sk-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .sk-tag { font-family: 'DM Mono', monospace; font-size: 0.56rem; letter-spacing: 0.04em; padding: 0.25rem 0.6rem; border: 1px solid rgba(200,168,130,0.18); color: rgba(245,240,235,0.55); transition: border-color 0.2s, color 0.2s; }
+  .skill-card:hover .sk-tag { border-color: rgba(200,168,130,0.35); color: rgba(245,240,235,0.85); }
+
+  /* EXPERIENCE */
+  .exp-row { display: grid; grid-template-columns: 210px 1fr; gap: 3rem; padding: 3.2rem 0; border-bottom: 1px solid var(--light); transition: padding-left 0.35s cubic-bezier(.19,1,.22,1); }
+  .exp-row:first-child { border-top: 1px solid var(--light); }
+  .exp-row:hover { padding-left: 1.2rem; }
+  .exp-period { font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.08em; color: var(--muted); line-height: 1.6; }
+  .exp-co { font-size: 0.85rem; font-weight: 600; color: var(--rust); margin-top: 0.6rem; }
+  .exp-sector { font-family: 'DM Mono', monospace; font-size: 0.52rem; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; margin-top: 0.3rem; opacity: 0.7; }
+  .exp-title { font-size: 1.6rem; font-weight: 300; letter-spacing: -0.015em; margin-bottom: 0.7rem; line-height: 1.2; }
+  .exp-body { font-size: 0.97rem; line-height: 1.75; color: #5a5048; font-weight: 300; margin-bottom: 1.2rem; }
+  .exp-tech { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .tech-pill { font-family: 'DM Mono', monospace; font-size: 0.53rem; letter-spacing: 0.06em; padding: 0.22rem 0.6rem; background: var(--light); color: var(--muted); transition: background 0.2s, color 0.2s; }
+  .exp-row:hover .tech-pill { background: #ddd0be; color: var(--rust); }
+
+  /* EDUCATION */
+  #education { background: #f0e8df; }
+  .edu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5px; background: var(--light); border: 1px solid var(--light); }
+  .edu-card { background: #f0e8df; padding: 2.5rem 2.2rem; transition: transform 0.3s, background 0.3s; }
+  .edu-card:hover { background: var(--paper); transform: translateY(-4px); }
+  .edu-year { font-family: 'DM Mono', monospace; font-size: 0.56rem; letter-spacing: 0.12em; color: var(--warm); margin-bottom: 1.2rem; text-transform: uppercase; }
+  .edu-degree { font-size: 1.25rem; font-weight: 300; line-height: 1.3; margin-bottom: 0.7rem; }
+  .edu-school { font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.06em; color: var(--muted); line-height: 1.65; }
+
+  /* LANGUAGES */
+  #languages { background: var(--ink); padding: 6rem 4.5rem; }
+  .lang-inner { display: flex; align-items: center; gap: 6rem; }
+  .lang-inner h2 { color: var(--paper); }
+  .lang-list { display: flex; gap: 3rem; flex: 1; }
+  .lang-item { flex: 1; border-left: 1px solid rgba(200,168,130,0.2); padding-left: 2rem; }
+  .lang-name { font-size: 2rem; font-weight: 300; color: var(--paper); letter-spacing: -0.02em; }
+  .lang-level { font-family: 'DM Mono', monospace; font-size: 0.56rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--warm); margin-top: 0.4rem; }
+
+  /* FOOTER */
+  footer { background: var(--rust); padding: 7rem 4.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: end; }
+  .footer-left h2 { font-size: clamp(2.5rem, 4vw, 4.5rem); font-weight: 300; color: rgba(255,255,255,0.9); letter-spacing: -0.03em; line-height: 1; }
+  .footer-left h2 em { font-style: italic; }
+  .footer-sub { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-top: 1.5rem; }
+  .footer-right { display: flex; flex-direction: column; gap: 0; }
+  .footer-link { display: flex; align-items: center; gap: 1.2rem; text-decoration: none; color: rgba(255,255,255,0.7); font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.06em; transition: color 0.25s; padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .footer-link:hover { color: rgba(255,255,255,1); }
+  .footer-link svg { width: 13px; height: 13px; fill: currentColor; flex-shrink: 0; }
+  .footer-copy { grid-column: 1/-1; font-family: 'DM Mono', monospace; font-size: 0.52rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.28); margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.8s ease, transform 0.8s cubic-bezier(.19,1,.22,1); }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+    nav { padding: 1.4rem 1.5rem; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; }
+    .hero-left { padding: 7rem 1.5rem 4rem; }
+    .hero-right { height: 220px; }
+    .hero-panel { clip-path: none; }
+    .hero-badge { left: 50%; transform: translate(-50%, -50%); }
+    .hero-contact-strip { display: none; }
+    section { padding: 5rem 1.5rem; }
+    .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+    .skills-grid { grid-template-columns: 1fr 1fr; }
+    .exp-row { grid-template-columns: 1fr; gap: 1rem; }
+    .edu-grid { grid-template-columns: 1fr; }
+    .lang-inner { flex-direction: column; gap: 3rem; }
+    .lang-list { flex-direction: column; }
+    footer { grid-template-columns: 1fr; padding: 4rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="ring"></div>
+
+<nav>
+  <div class="nav-logo">EH · Portfolio</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">Java Backend Engineer · Cloud Native · Tirana, Albania</div>
+    <h1><span>Endrina</span><em>Hoxha</em></h1>
+    <p class="hero-role">Senior Java developer with 11+ years of experience building cloud-native microservices, payment systems, and data engineering pipelines across fintech, telecom, and enterprise sectors.</p>
+    <div class="hero-actions">
+      <a href="#experience" class="btn">View Experience</a>
+      <a href="#contact" class="btn btn-outline">Get in Touch</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-panel">
+      <div class="hero-badge">
+        <div class="hero-badge-num">11+</div>
+        <div class="hero-badge-sub">Years of Experience</div>
+      </div>
+      <div class="hero-contact-strip">
+        <a href="mailto:endrinabaze3@gmail.com" class="contact-item">
+          <svg viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884zM18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
+          endrinabaze3@gmail.com
+        </a>
+        <a href="tel:+355699282363" class="contact-item">
+          <svg viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
+          (+355) 699 282 363
+        </a>
+        <a href="#" class="contact-item">
+          <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.338 16.338H13.67V12.16c0-.995-.017-2.277-1.387-2.277-1.39 0-1.601 1.086-1.601 2.207v4.248H8.014v-8.59h2.559v1.174h.037c.356-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.778 3.203 4.092v4.711zM5.005 6.575a1.548 1.548 0 11-.003-3.096 1.548 1.548 0 01.003 3.096zm-1.337 9.763H6.34v-8.59H3.667v8.59zM17.668 1H2.328C1.595 1 1 1.581 1 2.298v15.403C1 18.418 1.595 19 2.328 19h15.34c.734 0 1.332-.582 1.332-1.299V2.298C19 1.581 18.402 1 17.668 1z" clip-rule="evenodd"/></svg>
+          Endrina Hoxha — LinkedIn
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-cue">Scroll to explore</div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="sec-head reveal">
+    <span class="sec-num">01</span>
+    <h2>About <em>me</em></h2>
+  </div>
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <p>I am a <strong>Java Backend Engineer</strong> based in Tirana, Albania, with over a decade of hands-on experience delivering robust, cloud-native software. My career spans fintech, telecom, gambling, travel, and AI startup environments — each shaping my instinct for building systems that are both resilient and maintainable.</p>
+      <p>Currently embedded at <strong>Lutech / Edenred Italia</strong>, I work on payment orchestration microservices and cloud-native data engineering pipelines on Microsoft Azure. I take active ownership of solution design reviews and architectural documentation.</p>
+      <p>I hold a Master's degree in <strong>Software Engineering</strong> and a Bachelor's in <strong>Telecommunication Engineering</strong>. Fluent in Albanian, Italian, and English, I bridge technical and cross-cultural communication with ease.</p>
+      <div class="about-facts">
+        <div class="fact">Born 08 June 1991 · Tepelena, Albania</div>
+        <div class="fact">Based in Tirana, Albania</div>
+        <div class="fact">Albanian · Work Permit available</div>
+      </div>
+    </div>
+    <div class="stats-board reveal">
+      <div class="stat-cell"><div class="stat-n">11+</div><div class="stat-l">Years Experience</div></div>
+      <div class="stat-cell"><div class="stat-n">7</div><div class="stat-l">Companies</div></div>
+      <div class="stat-cell"><div class="stat-n">3</div><div class="stat-l">Languages</div></div>
+      <div class="stat-cell"><div class="stat-n">2</div><div class="stat-l">Advanced Degrees</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="sec-head reveal">
+    <span class="sec-num">02</span>
+    <h2>Technical <em>Skills</em></h2>
+  </div>
+  <div class="skills-grid">
+    <div class="skill-card reveal">
+      <div class="sk-icon">☕</div>
+      <div class="sk-cat">Core Stack</div>
+      <div class="sk-tags">
+        <span class="sk-tag">Java 17</span><span class="sk-tag">Java 21</span><span class="sk-tag">Spring Boot</span><span class="sk-tag">Quarkus</span><span class="sk-tag">Spring Security</span><span class="sk-tag">Spring Data</span><span class="sk-tag">Hibernate</span>
+      </div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="sk-icon">☁️</div>
+      <div class="sk-cat">Cloud & Azure</div>
+      <div class="sk-tags">
+        <span class="sk-tag">Microsoft Azure</span><span class="sk-tag">AKS</span><span class="sk-tag">Service Bus</span><span class="sk-tag">Event Hub</span><span class="sk-tag">Key Vault</span><span class="sk-tag">Redis</span><span class="sk-tag">Cosmos DB</span>
+      </div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="sk-icon">🗄️</div>
+      <div class="sk-cat">Databases</div>
+      <div class="sk-tags">
+        <span class="sk-tag">MongoDB</span><span class="sk-tag">Cosmos DB</span><span class="sk-tag">SQL Server</span><span class="sk-tag">Oracle</span><span class="sk-tag">PostgreSQL</span><span class="sk-tag">MySQL</span><span class="sk-tag">ElasticSearch</span>
+      </div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="sk-icon">📨</div>
+      <div class="sk-cat">Messaging & Streaming</div>
+      <div class="sk-tags">
+        <span class="sk-tag">Apache Kafka</span><span class="sk-tag">RabbitMQ</span><span class="sk-tag">Azure Service Bus</span><span class="sk-tag">Azure Event Hub</span>
+      </div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="sk-icon">🛠️</div>
+      <div class="sk-cat">DevOps & Tooling</div>
+      <div class="sk-tags">
+        <span class="sk-tag">Docker</span><span class="sk-tag">Kubernetes</span><span class="sk-tag">GKE</span><span class="sk-tag">Jenkins</span><span class="sk-tag">Git</span><span class="sk-tag">Azure DevOps</span><span class="sk-tag">Jira</span><span class="sk-tag">GitLab</span>
+      </div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="sk-icon">📐</div>
+      <div class="sk-cat">Architecture & Design</div>
+      <div class="sk-tags">
+        <span class="sk-tag">Microservices</span><span class="sk-tag">OpenAPI / OAS</span><span class="sk-tag">Solution Design</span><span class="sk-tag">REST</span><span class="sk-tag">WSDL/SOAP</span><span class="sk-tag">JUnit</span><span class="sk-tag">Mockito</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="sec-head reveal">
+    <span class="sec-num">03</span>
+    <h2>Work <em>Experience</em></h2>
+  </div>
+  <div>
+    <div class="exp-row reveal">
+      <div>
+        <div class="exp-period">July 2024 — Present</div>
+        <div class="exp-co">Lutech</div>
+        <div class="exp-sector">Technology Solutions</div>
+      </div>
+      <div>
+        <div class="exp-title">Software Engineer — Java Developer</div>
+        <div class="exp-body">Embedded in the CrossDev team delivering cloud-native payment and data engineering services for Edenred Italia. Leading development of payment orchestration microservices, solution design review and pre-validation, and Azure-based event-driven architectures using Service Bus and Event Hub.</div>
+        <div class="exp-tech"><span class="tech-pill">Java 17/21</span><span class="tech-pill">Spring Boot</span><span class="tech-pill">OpenAPI</span><span class="tech-pill">Cosmos DB</span><span class="tech-pill">MongoDB</span><span class="tech-pill">Azure</span><span class="tech-pill">Kafka</span><span class="tech-pill">Service Bus</span><span class="tech-pill">Event Hub</span><span class="tech-pill">Redis</span><span class="tech-pill">Azure DevOps</span></div>
+      </div>
+    </div>
+    <div class="exp-row reveal">
+      <div>
+        <div class="exp-period">May 2022 — June 2024</div>
+        <div class="exp-co">Engineering Ingegneria Informatica</div>
+        <div class="exp-sector">Telecommunication</div>
+      </div>
+      <div>
+        <div class="exp-title">Software Engineer — BackEnd Java Developer</div>
+        <div class="exp-body">Developed and maintained various microservices for Banking & Finance projects using Quarkus and Spring Boot. Built high-performance REST services with Oracle database integrations, RabbitMQ messaging, and CI/CD pipelines via Jenkins.</div>
+        <div class="exp-tech"><span class="tech-pill">Quarkus</span><span class="tech-pill">Spring Boot</span><span class="tech-pill">Hibernate</span><span class="tech-pill">JUnit</span><span class="tech-pill">Oracle</span><span class="tech-pill">RabbitMQ</span><span class="tech-pill">Jenkins</span><span class="tech-pill">Docker</span><span class="tech-pill">Jira</span></div>
+      </div>
+    </div>
+    <div class="exp-row reveal">
+      <div>
+        <div class="exp-period">Oct 2021 — Jan 2022</div>
+        <div class="exp-co">Private Project</div>
+        <div class="exp-sector">Telecommunication</div>
+      </div>
+      <div>
+        <div class="exp-title">Software Engineer — BackEnd Java Developer</div>
+        <div class="exp-body">Contributed to the Catalogo Digitale Calligaris project, building secure REST APIs with Spring Security and MongoDB as the primary data store.</div>
+        <div class="exp-tech"><span class="tech-pill">Spring Boot</span><span class="tech-pill">Spring Security</span><span class="tech-pill">MongoDB</span><span class="tech-pill">WSDL</span><span class="tech-pill">Jenkins</span><span class="tech-pill">Docker</span></div>
+      </div>
+    </div>
+    <div class="exp-row reveal">
+      <div>
+        <div class="exp-period">Apr 2021 — Apr 2022</div>
+        <div class="exp-co">Sisal Entertainment</div>
+        <div class="exp-sector">Gambling & Betting</div>
+      </div>
+      <div>
+        <div class="exp-title">Software Engineer — Full Stack Developer</div>
+        <div class="exp-body">Worked on the Sisal platform using AEM and OSGI for content management alongside backend Java services. Delivered frontend components with HTML, SCSS and JavaScript deployed on Kubernetes clusters.</div>
+        <div class="exp-tech"><span class="tech-pill">AEM</span><span class="tech-pill">OSGI</span><span class="tech-pill">Oracle</span><span class="tech-pill">Kubernetes</span><span class="tech-pill">Jenkins</span><span class="tech-pill">HTML/SCSS/JS</span><span class="tech-pill">Docker</span><span class="tech-pill">GitLab</span></div>
+      </div>
+    </div>
+    <div class="exp-row reveal">
+      <div>
+        <div class="exp-period">Jan 2021 — Apr 2021</div>
+        <div class="exp-co">FoolFarm S.p.A</div>
+        <div class="exp-sector">AI Startup Studio · Milano</div>
+      </div>
+      <div>
+        <div class="exp-title">Software Engineer — BackEnd Java Developer</div>
+        <div class="exp-body">Contributed to the internal FoolFarm framework using Spring Boot and Spring Data, integrating social authentication and PostgreSQL persistence in an agile AI startup environment.</div>
+        <div class="exp-tech"><span class="tech-pill">Spring Boot</span><span class="tech-pill">Spring Data</span><span class="tech-pill">PostgreSQL</span><span class="tech-pill">Spring Social</span><span class="tech-pill">GitLab</span><span class="tech-pill">Jira</span></div>
+      </div>
+    </div>
+    <div class="exp-row reveal">
+      <div>
+        <div class="exp-period">Oct 2018 — Dec 2020</div>
+        <div class="exp-co">EvolutionTravel Network</div>
+        <div class="exp-sector">Travel · London, UK</div>
+      </div>
+      <div>
+        <div class="exp-title">Software Engineer — BackEnd Java Developer</div>
+        <div class="exp-body">Built and maintained Spring microservices for a global travel platform. Integrated WhatsApp, SMS, and Telegram messaging via RabbitMQ. Worked with Liferay CMS, ElasticSearch search engine, and GKE deployments. Wrote comprehensive unit and integration tests with JUnit and Mockito.</div>
+        <div class="exp-tech"><span class="tech-pill">Spring Boot</span><span class="tech-pill">Microservices</span><span class="tech-pill">RabbitMQ</span><span class="tech-pill">ElasticSearch</span><span class="tech-pill">MySQL</span><span class="tech-pill">Liferay</span><span class="tech-pill">GKE</span><span class="tech-pill">Docker</span><span class="tech-pill">JUnit</span><span class="tech-pill">Mockito</span></div>
+      </div>
+    </div>
+    <div class="exp-row reveal">
+      <div>
+        <div class="exp-period">Nov 2013 — Oct 2018</div>
+        <div class="exp-co">Sielte S.p.A</div>
+        <div class="exp-sector">Consultancy · Rome, Italy</div>
+      </div>
+      <div>
+        <div class="exp-title">Technical Engineer → Team Leader</div>
+        <div class="exp-body">Began as Technical Engineer and grew into a Team Leader role, coordinating multiple parallel teams across design, realization, and turnkey delivery in technical assistance and consultancy. Completed professional Fiber Optics training at Sielte's facility.</div>
+        <div class="exp-tech"><span class="tech-pill">Team Leadership</span><span class="tech-pill">Technical Consulting</span><span class="tech-pill">Fiber Optics</span><span class="tech-pill">Project Management</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="sec-head reveal">
+    <span class="sec-num">04</span>
+    <h2>Education &amp; <em>Training</em></h2>
+  </div>
+  <div class="edu-grid">
+    <div class="edu-card reveal">
+      <div class="edu-year">Master's Degree</div>
+      <div class="edu-degree">Computer Science — Software Engineering</div>
+      <div class="edu-school">Canadian Institute of Technology (CIT)<br>Tirana, Albania</div>
+    </div>
+    <div class="edu-card reveal">
+      <div class="edu-year">Bachelor's Degree</div>
+      <div class="edu-degree">Telecommunication Engineering</div>
+      <div class="edu-school">Faculty of Information Technology<br>Polytechnic University of Tirana (UPT)</div>
+    </div>
+    <div class="edu-card reveal">
+      <div class="edu-year">May – June 2017 · Certification</div>
+      <div class="edu-degree">Fiber Optics Professional Training</div>
+      <div class="edu-school">Sielte S.p.A<br>Full professional experience on Fiber Optic network testing &amp; deployment</div>
+    </div>
+  </div>
+</section>
+
+<!-- LANGUAGES -->
+<section id="languages">
+  <div class="lang-inner">
+    <div class="reveal" style="flex-shrink:0">
+      <div style="display:flex;align-items:baseline;gap:1.2rem">
+        <span class="sec-num">05</span>
+        <h2>Languages</h2>
+      </div>
+    </div>
+    <div class="lang-list">
+      <div class="lang-item reveal">
+        <div class="lang-name">Albanian</div>
+        <div class="lang-level">Native</div>
+      </div>
+      <div class="lang-item reveal">
+        <div class="lang-name">Italian</div>
+        <div class="lang-level">Professional Proficiency</div>
+      </div>
+      <div class="lang-item reveal">
+        <div class="lang-name">English</div>
+        <div class="lang-level">Professional Proficiency</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER / CONTACT -->
+<footer id="contact">
+  <div class="footer-left">
+    <h2>Let's <em>work</em><br>together</h2>
+    <p class="footer-sub">Open to senior roles, remote contracts &amp; collaborations</p>
+  </div>
+  <div class="footer-right">
+    <a href="mailto:endrinabaze3@gmail.com" class="footer-link">
+      <svg viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884zM18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
+      endrinabaze3@gmail.com
+    </a>
+    <a href="tel:+355699282363" class="footer-link">
+      <svg viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
+      (+355) 699 282 363
+    </a>
+    <a href="#" class="footer-link">
+      <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.338 16.338H13.67V12.16c0-.995-.017-2.277-1.387-2.277-1.39 0-1.601 1.086-1.601 2.207v4.248H8.014v-8.59h2.559v1.174h.037c.356-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.778 3.203 4.092v4.711zM5.005 6.575a1.548 1.548 0 11-.003-3.096 1.548 1.548 0 01.003 3.096zm-1.337 9.763H6.34v-8.59H3.667v8.59zM17.668 1H2.328C1.595 1 1 1.581 1 2.298v15.403C1 18.418 1.595 19 2.328 19h15.34c.734 0 1.332-.582 1.332-1.299V2.298C19 1.581 18.402 1 17.668 1z" clip-rule="evenodd"/></svg>
+      LinkedIn — Endrina Hoxha
+    </a>
+  </div>
+  <div class="footer-copy">
+    <span>Endrina Hoxha · Java Backend Engineer</span>
+    <span>Tirana, Albania · 2025</span>
+  </div>
+</footer>
+
+<script>
+  const cur = document.getElementById('cur');
+  const ring = document.getElementById('ring');
+  document.addEventListener('mousemove', e => {
+    cur.style.transform = `translate(${e.clientX - 4}px, ${e.clientY - 4}px)`;
+    ring.style.transform = `translate(${e.clientX - 15}px, ${e.clientY - 15}px)`;
+  });
+
+  const revEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), (i % 4) * 80);
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  revEls.forEach(el => io.observe(el));
+</script>
+</body>
+</html>
